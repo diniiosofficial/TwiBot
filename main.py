@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.chrome.service import Service
 import time
 import random
 import string
@@ -57,14 +57,12 @@ class TwitterBot:
     async def register_email_with_bot(self, email):
         """Register email with fakemailbot"""
         try:
-            # Check if client is connected
             if not self.client or not self.client.is_connected():
                 print("❌ Telegram client not connected")
                 return False
             
             bot = await self.client.get_entity('fakemailbot')
             
-            # Send commands to bot
             await self.client.send_message(bot, "/start")
             await asyncio.sleep(2)
             
@@ -101,21 +99,69 @@ class TwitterBot:
             return False
     
     def setup_browser(self):
-        """Setup Chrome browser with options"""
+        """Setup Chromium browser with multiple fallback methods"""
         try:
             chrome_options = Options()
+            
+            # Set Chromium binary location
+            chrome_options.binary_location = '/usr/bin/chromium'
+            
+            # Browser options
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
             chrome_options.add_argument('--disable-blink-features=AutomationControlled')
             chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
             chrome_options.add_experimental_option('useAutomationExtension', False)
+            chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             
-            # Try to use system Chrome
-            driver = webdriver.Chrome(options=chrome_options)
-            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            return driver
+            # Try multiple methods to setup driver
+            methods = [
+                self._setup_chromium_driver,
+                self._setup_chrome_service,
+                self._setup_fallback_driver
+            ]
+            
+            for method in methods:
+                driver = method(chrome_options)
+                if driver:
+                    return driver
+            
+            return None
+            
         except Exception as e:
             print(f"❌ Browser setup failed: {e}")
+            return None
+    
+    def _setup_chromium_driver(self, chrome_options):
+        """Method 1: Use system Chromium"""
+        try:
+            service = Service('/usr/bin/chromedriver')
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("✅ Using system Chromium driver")
+            return driver
+        except:
+            return None
+    
+    def _setup_chrome_service(self, chrome_options):
+        """Method 2: Use Chrome service without specified driver"""
+        try:
+            driver = webdriver.Chrome(options=chrome_options)
+            print("✅ Using Chrome with auto-detected driver")
+            return driver
+        except:
+            return None
+    
+    def _setup_fallback_driver(self, chrome_options):
+        """Method 3: Use webdriver-manager as fallback"""
+        try:
+            from webdriver_manager.chrome import ChromeDriverManager
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            
+            service = ChromeService(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("✅ Using webdriver-manager Chrome driver")
+            return driver
+        except:
             return None
     
     def click_create_account(self, driver):
@@ -144,7 +190,7 @@ class TwitterBot:
         """Fill the complete signup form"""
         try:
             # Wait for form to load
-            time.sleep(3)
+            time.sleep(5)
             
             # Fill name
             name_field = driver.find_element(By.NAME, "name")
@@ -243,6 +289,8 @@ class TwitterBot:
         driver = self.setup_browser()
         
         if not driver:
+            print("❌ Could not start browser. Please install Chromium:")
+            print("   sudo apt install chromium chromium-driver")
             return False
         
         try:
