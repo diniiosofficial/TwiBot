@@ -1,0 +1,53 @@
+──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
+└─$ python main.py 
+🤖 AUTO-TWITTER BOT
+⭐ Automatic installation & execution
+==================================================
+🔧 Installing required packages...
+📦 Installing selenium...
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Kali-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have pypy3-venv installed.
+    
+    If you wish to install a non-Kali-packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    For more information, refer to the following:
+    * https://www.kali.org/docs/general-use/python3-external-packages/
+    * /usr/share/doc/python3.12/README.venv
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+Traceback (most recent call last):
+  File "/home/diniios/TwiBot/main.py", line 26, in install_requirements
+    importlib.import_module(package)
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'selenium'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/diniios/TwiBot/main.py", line 371, in <module>
+    install_requirements()
+  File "/home/diniios/TwiBot/main.py", line 30, in install_requirements
+    subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name])
+  File "/usr/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['/usr/bin/python', '-m', 'pip', 'install', 'selenium']' returned non-zero exit status 1.
+                                                                                                                                                                                                   
+┌──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
+└─$ 
