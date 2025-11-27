@@ -1,27 +1,65 @@
-diniios㉿kali-raspberry-pi5)-[~/TwiBot]
-└─$ python3 main.py                                        
+┌──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
+└─$ python3 main.py                                   
 🚀 STARTING TWITTER BOT
 ==================================================
-Please enter the code you received: 78846
+Please enter the code you received: 75939
 Signed in successfully as Magudeeshwaran; remember to not break the ToS or you will risk an account ban!
 ✅ Connected to Telegram successfully!
 
 🎲 GENERATED ACCOUNT DETAILS:
-👤 Name: James Johnson
-📧 Email: aixml3hp@telegmail.com
-🆔 Username: aixml3hp
-🔑 Password: #VZ#xaD1aEG7
-✅ Email aixml3hp@telegmail.com registered with @fakemailbot
+👤 Name: Chris Williams
+📧 Email: aq542z0p@telegmail.com
+🆔 Username: aq542z0p
+🔑 Password: oJcxz$TrARl7
+✅ Email aq542z0p@telegmail.com registered with @fakemailbot
 
 ✅ Credentials saved:
-📧 Email: aixml3hp@telegmail.com
-👤 Username: aixml3hp
-🔑 Password: #VZ#xaD1aEG7
+📧 Email: aq542z0p@telegmail.com
+👤 Username: aq542z0p
+🔑 Password: oJcxz$TrARl7
 🌐 Launching browser...
-❌ Browser setup failed: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
-
+❌ Could not start browser. Please install Chromium:
+   sudo apt install chromium chromium-driver
 ❌ Account creation failed
 🔒 Telegram disconnected
+                                                                                                                                                                                                   
+┌──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
+└─$   sudo apt install chromium chromium-driver
+[sudo] password for diniios: 
+Upgrading:                      
+  chromium  chromium-common  chromium-sandbox  flac
+                                                                                                                                                                                                   
+Installing:
+  chromium-driver
+                                                                                                                                                                                                   
+Installing dependencies:
+  libflac14  libopenh264-8
+                                                                                                                                                                                                   
+Summary:
+  Upgrading: 4, Installing: 3, Removing: 0, Not Upgrading: 995
+  Download size: 99.4 MB / 99.8 MB
+  Space needed: 22.7 MB / 7,610 MB available
+
+Continue? [Y/n] Y
+Err:1 http://http.kali.org/kali kali-rolling/main arm64 chromium arm64 134.0.6998.88-1
+  404  Not Found [IP: 54.39.128.230 80]
+Err:2 http://http.kali.org/kali kali-rolling/main arm64 chromium-sandbox arm64 134.0.6998.88-1
+  404  Not Found [IP: 54.39.128.230 80]
+Err:3 http://http.kali.org/kali kali-rolling/main arm64 chromium-common arm64 134.0.6998.88-1
+  404  Not Found [IP: 54.39.128.230 80]
+Err:4 http://http.kali.org/kali kali-rolling/main arm64 libflac14 arm64 1.5.0+ds-2
+  404  Not Found [IP: 54.39.128.230 80]
+Err:5 http://http.kali.org/kali kali-rolling/main arm64 chromium-driver arm64 134.0.6998.88-1
+  404  Not Found [IP: 54.39.128.230 80]
+Err:6 http://http.kali.org/kali kali-rolling/main arm64 flac arm64 1.5.0+ds-2
+  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-sandbox_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-common_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/f/flac/libflac14_1.5.0%2bds-2_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-driver_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Failed to fetch http://http.kali.org/kali/pool/main/f/flac/flac_1.5.0%2bds-2_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
+Error: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
                                                                                                                                                                                                    
 ┌──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
 └─$ 
