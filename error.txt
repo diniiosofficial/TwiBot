@@ -1,60 +1,27 @@
-──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
-└─$ sudo apt install python3-selenium python3-requests python3-bs4 python3-cryptography
-python3-cryptography is already the newest version (43.0.0-1).
-python3-cryptography set to manually installed.
-Upgrading:
-  chromium  chromium-common  chromium-sandbox  flac  python3-bs4  python3-requests
-                                                                                                                                                                                                   
-Installing:
-  python3-selenium
-                                                                                                                                                                                                   
-Installing dependencies:
-  chromium-driver  libflac14  libopenh264-8  python3-outcome  python3-trio  python3-trio-websocket
-                                                                                                                                                                                                   
-Suggested packages:
-  python-selenium-doc
+diniios㉿kali-raspberry-pi5)-[~/TwiBot]
+└─$ python3 main.py                                        
+🚀 STARTING TWITTER BOT
+==================================================
+Please enter the code you received: 78846
+Signed in successfully as Magudeeshwaran; remember to not break the ToS or you will risk an account ban!
+✅ Connected to Telegram successfully!
 
-Summary:
-  Upgrading: 6, Installing: 7, Removing: 0, Not Upgrading: 993
-  Download size: 100 MB
-  Space needed: 25.3 MB / 7,707 MB available
+🎲 GENERATED ACCOUNT DETAILS:
+👤 Name: James Johnson
+📧 Email: aixml3hp@telegmail.com
+🆔 Username: aixml3hp
+🔑 Password: #VZ#xaD1aEG7
+✅ Email aixml3hp@telegmail.com registered with @fakemailbot
 
-Continue? [Y/n] Y
-Err:1 http://http.kali.org/kali kali-rolling/main arm64 chromium arm64 134.0.6998.88-1
-  404  Not Found [IP: 54.39.128.230 80]
-Err:2 http://http.kali.org/kali kali-rolling/main arm64 chromium-sandbox arm64 134.0.6998.88-1
-  404  Not Found [IP: 54.39.128.230 80]
-Err:3 http://http.kali.org/kali kali-rolling/main arm64 chromium-common arm64 134.0.6998.88-1
-  404  Not Found [IP: 54.39.128.230 80]
-Err:4 http://http.kali.org/kali kali-rolling/main arm64 libflac14 arm64 1.5.0+ds-2
-  404  Not Found [IP: 54.39.128.230 80]
-Err:6 http://http.kali.org/kali kali-rolling/main arm64 chromium-driver arm64 134.0.6998.88-1
-  404  Not Found [IP: 54.39.128.230 80]
-Err:7 http://http.kali.org/kali kali-rolling/main arm64 flac arm64 1.5.0+ds-2
-  404  Not Found [IP: 54.39.128.230 80]
-Err:8 http://http.kali.org/kali kali-rolling/main arm64 python3-bs4 all 4.13.3-2
-  404  Not Found [IP: 54.39.128.230 80]
-Err:9 http://http.kali.org/kali kali-rolling/main arm64 python3-outcome all 1.2.0-1.1
-  404  Not Found [IP: 54.39.128.230 80]
-Err:10 http://http.kali.org/kali kali-rolling/main arm64 python3-requests all 2.32.3+dfsg-4
-  404  Not Found [IP: 54.39.128.230 80]
-Err:11 http://http.kali.org/kali kali-rolling/main arm64 python3-trio all 0.29.0-1
-  404  Not Found [IP: 54.39.128.230 80]
-Get:5 http://http.kali.org/kali kali-rolling/main arm64 libopenh264-8 arm64 2.6.0+dfsg-2 [336 kB]
-Get:12 http://mirror.kku.ac.th/kali kali-rolling/main arm64 python3-trio-websocket all 0.12.2-1 [25.5 kB]
-Get:13 http://http.kali.org/kali kali-rolling/main arm64 python3-selenium all 4.24.4+dfsg-1 [123 kB]
-Fetched 484 kB in 3s (159 kB/s)           
-Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-sandbox_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-common_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/f/flac/libflac14_1.5.0%2bds-2_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/c/chromium/chromium-driver_134.0.6998.88-1_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/f/flac/flac_1.5.0%2bds-2_arm64.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/b/beautifulsoup4/python3-bs4_4.13.3-2_all.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/p/python-outcome/python3-outcome_1.2.0-1.1_all.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/r/requests/python3-requests_2.32.3%2bdfsg-4_all.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Failed to fetch http://http.kali.org/kali/pool/main/p/python-trio/python3-trio_0.29.0-1_all.deb  404  Not Found [IP: 54.39.128.230 80]
-Error: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+✅ Credentials saved:
+📧 Email: aixml3hp@telegmail.com
+👤 Username: aixml3hp
+🔑 Password: #VZ#xaD1aEG7
+🌐 Launching browser...
+❌ Browser setup failed: Message: Unable to obtain driver for chrome; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+
+❌ Account creation failed
+🔒 Telegram disconnected
                                                                                                                                                                                                    
 ┌──(diniios㉿kali-raspberry-pi5)-[~/TwiBot]
-└─$                                                                                                         
+└─$ 
