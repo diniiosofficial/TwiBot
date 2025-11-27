@@ -2,54 +2,48 @@
 import os
 import sys
 import subprocess
-import importlib
+import venv
 import time
 import random
 import string
 from datetime import datetime
 
-# ===== AUTO-INSTALLATION =====
-def install_requirements():
-    """Automatically install all required packages"""
-    required_packages = {
-        'selenium': 'selenium',
-        'telethon': 'telethon', 
-        'requests': 'requests',
-        'beautifulsoup4': 'beautifulsoup4',
-        'cryptography': 'cryptography'
-    }
+# ===== VIRTUAL ENVIRONMENT SETUP =====
+def setup_environment():
+    """Create virtual environment and install packages"""
+    print("🔧 Setting up virtual environment...")
     
-    print("🔧 Installing required packages...")
+    # Create venv if it doesn't exist
+    if not os.path.exists("venv"):
+        print("📁 Creating virtual environment...")
+        venv.create("venv", with_pip=True)
     
-    for package, pip_name in required_packages.items():
+    # Get paths
+    if sys.platform.startswith('win'):
+        python_path = os.path.join("venv", "Scripts", "python.exe")
+        pip_path = os.path.join("venv", "Scripts", "pip.exe")
+    else:
+        python_path = os.path.join("venv", "bin", "python")
+        pip_path = os.path.join("venv", "bin", "pip")
+    
+    # Install required packages
+    packages = [
+        "selenium", 
+        "telethon", 
+        "requests", 
+        "beautifulsoup4", 
+        "cryptography"
+    ]
+    
+    print("📦 Installing packages in virtual environment...")
+    for package in packages:
         try:
-            importlib.import_module(package)
-            print(f"✅ {package} already installed")
-        except ImportError:
-            print(f"📦 Installing {package}...")
-            subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name])
+            subprocess.run([pip_path, "install", package], check=True, capture_output=True)
+            print(f"✅ Installed {package}")
+        except subprocess.CalledProcessError:
+            print(f"⚠️ Failed to install {package}")
     
-    # Install Chrome and ChromeDriver on Linux
-    if sys.platform.startswith('linux'):
-        print("🌐 Setting up Chrome browser...")
-        try:
-            # Install Chrome
-            subprocess.run(['wget', 'https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'], 
-                         capture_output=True)
-            subprocess.run(['sudo', 'apt', 'install', './google-chrome-stable_current_amd64.deb', '-y'], 
-                         capture_output=True)
-            
-            # Install ChromeDriver
-            subprocess.run(['wget', 'https://storage.googleapis.com/chrome-for-testing-public/120.0.6099.109/linux64/chromedriver-linux64.zip'], 
-                         capture_output=True)
-            subprocess.run(['unzip', 'chromedriver-linux64.zip'], capture_output=True)
-            subprocess.run(['sudo', 'mv', 'chromedriver-linux64/chromedriver', '/usr/local/bin/'], 
-                         capture_output=True)
-            subprocess.run(['sudo', 'chmod', '+x', '/usr/local/bin/chromedriver'], 
-                         capture_output=True)
-            print("✅ Chrome setup completed")
-        except:
-            print("⚠️ Chrome setup may need manual intervention")
+    return python_path
 
 # ===== MAIN BOT =====
 class AutoTwitterBot:
@@ -79,23 +73,37 @@ class AutoTwitterBot:
 
     def setup_browser(self):
         """Setup Chrome browser for automation"""
-        from selenium import webdriver
-        from selenium.webdriver.chrome.options import Options
-        
-        print("🌐 Launching browser...")
-        chrome_options = Options()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        
         try:
-            driver = webdriver.Chrome(options=chrome_options)
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.chrome.service import Service
+            from webdriver_manager.chrome import ChromeDriverManager
+            
+            print("🌐 Setting up browser...")
+            
+            # Setup Chrome options
+            chrome_options = Options()
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            chrome_options.add_experimental_option('useAutomationExtension', False)
+            chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+            
+            # Auto-download and setup ChromeDriver
+            service = Service(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            
+            # Remove automation flags
             driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                "userAgent": 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            })
+            
             return driver
+            
         except Exception as e:
-            print(f"❌ Browser error: {e}")
+            print(f"❌ Browser setup failed: {e}")
             return None
 
     def click_create_account(self, driver):
@@ -115,7 +123,8 @@ class AutoTwitterBot:
             "//span[contains(text(), 'Sign up')]",
             "//a[contains(@href, 'signup')]",
             "//button[contains(text(), 'Sign up')]",
-            "//div[contains(text(), 'Create account')]"
+            "//div[contains(text(), 'Create account')]",
+            "//button[@data-testid='signupButton']"
         ]
         
         for selector in selectors:
@@ -123,14 +132,20 @@ class AutoTwitterBot:
                 button = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, selector))
                 )
-                button.click()
+                driver.execute_script("arguments[0].click();", button)
                 print("✅ Clicked Create Account button!")
                 return True
             except:
                 continue
         
-        print("❌ Could not find Create Account button")
-        return False
+        # If no button found, try JavaScript click
+        try:
+            driver.execute_script("window.location.href = 'https://x.com/i/flow/signup'")
+            time.sleep(3)
+            return True
+        except:
+            print("❌ Could not find Create Account button")
+            return False
 
     def fill_signup_form(self, driver, name, email, day, month, year, username, password):
         """Fill the entire signup form automatically"""
@@ -142,105 +157,77 @@ class AutoTwitterBot:
         
         try:
             # Wait for form to load
-            time.sleep(3)
+            time.sleep(5)
             
             # Fill name field
-            name_selectors = ["//input[@name='name']", "//input[@placeholder='Name']", "//input[contains(@class, 'name')]"]
-            for selector in name_selectors:
+            name_fields = driver.find_elements(By.XPATH, "//input[@name='name']")
+            if not name_fields:
+                name_fields = driver.find_elements(By.XPATH, "//input[@type='text']")
+            
+            for field in name_fields:
                 try:
-                    name_field = driver.find_element(By.XPATH, selector)
-                    name_field.clear()
-                    name_field.send_keys(name)
+                    field.clear()
+                    field.send_keys(name)
                     print(f"✅ Name entered: {name}")
                     break
                 except:
                     continue
             
-            time.sleep(1)
+            time.sleep(2)
             
             # Fill email field
-            email_selectors = ["//input[@name='email']", "//input[@type='email']", "//input[contains(@placeholder, 'email')]"]
-            for selector in email_selectors:
+            email_fields = driver.find_elements(By.XPATH, "//input[@type='email']")
+            for field in email_fields:
                 try:
-                    email_field = driver.find_element(By.XPATH, selector)
-                    email_field.clear()
-                    email_field.send_keys(email)
+                    field.clear()
+                    field.send_keys(email)
                     print(f"✅ Email entered: {email}")
                     break
                 except:
                     continue
             
-            time.sleep(1)
+            time.sleep(2)
             
             # Handle date of birth
             self.fill_date_of_birth(driver, day, month, year)
-            time.sleep(1)
+            time.sleep(2)
             
             # Click Next button
-            next_selectors = ["//span[contains(text(), 'Next')]", "//button[contains(text(), 'Next')]", "//div[contains(text(), 'Next')]"]
-            for selector in next_selectors:
-                try:
-                    next_btn = driver.find_element(By.XPATH, selector)
-                    next_btn.click()
-                    print("✅ Clicked Next")
-                    break
-                except:
-                    continue
+            self.click_next_button(driver)
+            time.sleep(5)
             
-            time.sleep(3)
-            
-            # Fill username
-            username_selectors = ["//input[@name='username']", "//input[contains(@placeholder, 'username')]"]
-            for selector in username_selectors:
+            # Fill username in next step
+            username_fields = driver.find_elements(By.XPATH, "//input[@name='username']")
+            for field in username_fields:
                 try:
-                    username_field = driver.find_element(By.XPATH, selector)
-                    username_field.clear()
-                    username_field.send_keys(username)
+                    field.clear()
+                    field.send_keys(username)
                     print(f"✅ Username entered: {username}")
                     break
                 except:
                     continue
             
-            time.sleep(1)
-            
-            # Click Next after username
-            for selector in next_selectors:
-                try:
-                    next_btn = driver.find_element(By.XPATH, selector)
-                    next_btn.click()
-                    print("✅ Clicked Next after username")
-                    break
-                except:
-                    continue
-            
-            time.sleep(3)
+            time.sleep(2)
+            self.click_next_button(driver)
+            time.sleep(5)
             
             # Fill password
-            password_selectors = ["//input[@type='password']", "//input[@name='password']"]
-            for selector in password_selectors:
+            password_fields = driver.find_elements(By.XPATH, "//input[@type='password']")
+            for field in password_fields:
                 try:
-                    password_field = driver.find_element(By.XPATH, selector)
-                    password_field.clear()
-                    password_field.send_keys(password)
+                    field.clear()
+                    field.send_keys(password)
                     print("✅ Password entered")
                     break
                 except:
                     continue
             
-            time.sleep(1)
+            time.sleep(2)
             
             # Final signup
-            signup_selectors = ["//span[contains(text(), 'Sign up')]", "//button[contains(text(), 'Sign up')]"]
-            for selector in signup_selectors:
-                try:
-                    signup_btn = driver.find_element(By.XPATH, selector)
-                    signup_btn.click()
-                    print("✅ Final signup clicked!")
-                    return True
-                except:
-                    continue
+            self.click_signup_button(driver)
             
-            return False
+            return True
             
         except Exception as e:
             print(f"❌ Form filling error: {e}")
@@ -249,55 +236,83 @@ class AutoTwitterBot:
     def fill_date_of_birth(self, driver, day, month, year):
         """Fill date of birth fields"""
         from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import Select
         
         try:
-            # Month dropdown
-            month_selectors = ["//select[@id='SELECTOR_1']", "//select[contains(@name, 'month')]"]
-            for selector in month_selectors:
-                try:
-                    month_dropdown = driver.find_element(By.XPATH, selector)
-                    month_dropdown.click()
-                    time.sleep(1)
-                    month_option = driver.find_element(By.XPATH, f"//option[@value='{month}']")
-                    month_option.click()
-                    break
-                except:
-                    continue
+            # Find all dropdowns
+            dropdowns = driver.find_elements(By.TAG_NAME, "select")
             
-            time.sleep(1)
-            
-            # Day dropdown
-            day_selectors = ["//select[@id='SELECTOR_2']", "//select[contains(@name, 'day')]"]
-            for selector in day_selectors:
-                try:
-                    day_dropdown = driver.find_element(By.XPATH, selector)
-                    day_dropdown.click()
-                    time.sleep(1)
-                    day_option = driver.find_element(By.XPATH, f"//option[@value='{day}']")
-                    day_option.click()
-                    break
-                except:
-                    continue
-            
-            time.sleep(1)
-            
-            # Year dropdown
-            year_selectors = ["//select[@id='SELECTOR_3']", "//select[contains(@name, 'year')]"]
-            for selector in year_selectors:
-                try:
-                    year_dropdown = driver.find_element(By.XPATH, selector)
-                    year_dropdown.click()
-                    time.sleep(1)
-                    year_option = driver.find_element(By.XPATH, f"//option[@value='{year}']")
-                    year_option.click()
-                    break
-                except:
-                    continue
-            
-            print(f"✅ DOB set: {day}/{month}/{year}")
-            
+            if len(dropdowns) >= 3:
+                # Month
+                month_select = Select(dropdowns[0])
+                month_select.select_by_value(str(month))
+                time.sleep(1)
+                
+                # Day
+                day_select = Select(dropdowns[1])
+                day_select.select_by_value(str(day))
+                time.sleep(1)
+                
+                # Year
+                year_select = Select(dropdowns[2])
+                year_select.select_by_value(str(year))
+                time.sleep(1)
+                
+                print(f"✅ DOB set: {day}/{month}/{year}")
+            else:
+                print("⚠️ Could not find DOB dropdowns")
+                
         except Exception as e:
             print(f"⚠️ DOB setup failed: {e}")
+
+    def click_next_button(self, driver):
+        """Click Next button"""
+        from selenium.webdriver.common.by import By
+        
+        next_selectors = [
+            "//span[contains(text(), 'Next')]",
+            "//button[contains(text(), 'Next')]",
+            "//div[contains(text(), 'Next')]",
+            "//button[@data-testid='nextButton']"
+        ]
+        
+        for selector in next_selectors:
+            try:
+                buttons = driver.find_elements(By.XPATH, selector)
+                for button in buttons:
+                    try:
+                        driver.execute_script("arguments[0].click();", button)
+                        print("✅ Clicked Next")
+                        return True
+                    except:
+                        continue
+            except:
+                continue
+        return False
+
+    def click_signup_button(self, driver):
+        """Click final Signup button"""
+        from selenium.webdriver.common.by import By
+        
+        signup_selectors = [
+            "//span[contains(text(), 'Sign up')]",
+            "//button[contains(text(), 'Sign up')]",
+            "//button[@data-testid='signupButton']"
+        ]
+        
+        for selector in signup_selectors:
+            try:
+                buttons = driver.find_elements(By.XPATH, selector)
+                for button in buttons:
+                    try:
+                        driver.execute_script("arguments[0].click();", button)
+                        print("✅ Final signup clicked!")
+                        return True
+                    except:
+                        continue
+            except:
+                continue
+        return False
 
     def save_account(self, username, email, password):
         """Save account to file"""
@@ -332,6 +347,7 @@ class AutoTwitterBot:
             # Open Twitter signup page
             print("🌐 Opening Twitter signup page...")
             driver.get("https://x.com/i/flow/signup")
+            time.sleep(5)
             
             # Click Create Account button
             if not self.click_create_account(driver):
@@ -364,13 +380,26 @@ class AutoTwitterBot:
 # ===== MAIN EXECUTION =====
 if __name__ == "__main__":
     print("🤖 AUTO-TWITTER BOT")
-    print("⭐ Automatic installation & execution")
+    print("⭐ Kali Linux - Virtual Environment")
     print("="*50)
     
-    # Auto-install requirements
-    install_requirements()
+    # First install webdriver-manager using system pip (allowed in Kali)
+    try:
+        subprocess.run([sys.executable, "-m", "pip", "install", "webdriver-manager"], 
+                      capture_output=True)
+    except:
+        pass
     
-    # Run the bot
+    # Setup virtual environment
+    python_path = setup_environment()
+    
+    # Run the bot in the virtual environment
+    if sys.platform.startswith('win'):
+        subprocess.run([python_path, __file__])
+    else:
+        os.execv(python_path, [python_path, __file__])
+    
+    # If we get here, run the actual bot
     bot = AutoTwitterBot()
     
     while True:
